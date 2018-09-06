@@ -24,7 +24,10 @@ df.drop(['DWDP', 'V'], axis=1, inplace=True)
 data = pd.DataFrame(df.copy())
 
 # Daily Log Returns (%)
-datareturns = np.log(data / data.shift(1)) * 100
+# datareturns = np.log(data / data.shift(1)) 
+
+# Daily Returns (%)
+datareturns = data.pct_change(1)
 
 # Data Raw
 data_raw = datareturns
@@ -48,7 +51,7 @@ data_raw.dropna(how='any', inplace=True)
 # Taking away the market benchmark DJIA
 stock_tickers = data.columns.values[:-1]
 n_tickers = len(stock_tickers)
-print(stock_tickers)
+
 # Dividing the dataset into training and testing sets
 percentage = int(len(data) * 0.8)
 X_train = data[:percentage]
@@ -128,7 +131,7 @@ def plotEigen(weights, plot=False, portfolio=portfolio):
     return portfolio
 
 # Weights are stored in arrays, where 0 is the first PC's weights.
-plotEigen(weights=weights[0], plot=False)
+plotEigen(weights=weights[4], plot=False)
 
 # Sharpe Ratio
 def sharpe_ratio(ts_returns, periods_per_year=252):
@@ -209,3 +212,4 @@ def optimizedPortfolio():
     plt.show()
 
 optimizedPortfolio()
+
