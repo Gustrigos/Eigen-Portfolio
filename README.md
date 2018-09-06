@@ -3,8 +3,10 @@ Automatized unsupervised machine learning Principal Component Analysis (PCA) on 
 
 ### Files
 1) tiingoconnect.py: creates a function to extract historical financial data from the financial API Tiingo. 
-2) getdata.py: uses three functions to extract the tickers from the components of the DJIA, downloads historical OHLC values for each ticker and the DJIA Index into individual csv batches, and compiles all the adjusted closing for every ticker into the main csv file to use it as data for ml.py.
-3) ml.py:
+2) getdata.py: uses three functions to extract the tickers from the components of the DJIA, downloads historical OHLC values for each ticker and the DJIA Index into individual csv batches, and compiles all the adjusted closing price for every ticker into the main csv file to use it as data for ml.py.
+3) ml.py: takes as input the dataset obtained from getdata.py and computes logarithmic average and basic average returns for each company in the DJIA as well as for the index. It then creates a covariance matrix with every ticker and trains it with Principle Component Analysis to extract its principle components. With this, we can then compute the principle components to create Eigen Portfolios. We then pass a function to compute geometric average returns, valatility, and the sharpe ratio to output an optimized portfolio with the highest sharpe ratio (Highest average return and lowest volatility).
+4) ml.ipnb: Jupyter Notebook implementation of ml.py to visualize outputs in order.
+5) data.csv: dataset containing every ticker's adjusted closing price. (You can skip the steps of gathering data).
 
 ## Data
 With the functions on getdata.py, we will be able to parse data with beautifulsoup4 through CNN Money to obtain the tickers of the Dow Jones Industrial Average Index. It will create a list of the 30 tickers and will pass the tickers as inputs for the financial API to download historical values.
@@ -14,5 +16,17 @@ Using Tiingo API, which gives you access to countless of historical information 
 After downloading the information, we will have a pandas dataframe with basic information for every ticker (Open, High, Low, Close, Volume, and Adjusted values). With this we will choose all the adjusted closing values of each ticker and we will concatenate them into a big dataframe which we will use as our starting dataset for the ml.py file.
 
 ## Machine Learning
+We import the pandas dataframe containing all the adjusted closing prices for all the companies in the DJIA as well as the DJIA's index. Because our starting date was the year 2000, the adjusted closing prices for Dow Chemicals and Visa appear as Not a Number values. For this we will take away both respective columns. We will end up with 28 columns of companies information and an additional one for the DJIA index.
 
+### Logarithmic Returns
+The price for an asset i at a given time t is pi,t and the logarithmic returns for each stock i will be written as:
+ri,t = ln * (pi,t)/pi,t−1.
+
+### Linear Returns
+The price for an asset i at a given time t is pi,t and the linear returns for each stock i will be written as:
+ri,t=(pi,t−pi,t−1)/pi,t−1.
+
+### Normalizing Returns
+In order to create a covariance matrix that can be applied for the Principle Component Analysis, we will have to normalize the returns we choose to work with.
+To normalize we substract the mean of each return and divide the residual by the return's standard deviation.
 
