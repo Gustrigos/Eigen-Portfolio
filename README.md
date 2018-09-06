@@ -44,12 +44,14 @@ We compute several functions to determine the weights of each principle componen
 
 ### Sharpe Ratio
 The sharpe ratio explains the annualized returns against the annualized volatility of each company in a portfolio. 
+A high sharpe ratio explains higher returns and lower volatility for the specified portfolio.
 
 1) Annualized Returns: We have to apply the geometric average of all the returns in respect to the periods per year (days of operations in the exchange in a year). 
 2) Annualized Volatility: We have to take the standard deviation of the returns and multiply it by the square root of the periods per year. 
 3) Annualized Sharpe: we compute the ratio by dividing the annualized returns against the annualized volatility. 
 
-
+### Optimized Portfolio
+We compute an iterable loop to compute the principle component's weights for each Eigen Portfolio, which then uses the sharpe ratio function to look for the portfolio with the highest sharpe ratio. Once we know which portfolio has the highest sharpe ratio, we can visualize its performance against the DJIA Index to understand how it outperforms it. 
 
 
 
