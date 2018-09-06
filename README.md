@@ -43,3 +43,13 @@ This function computes an inversed elbow chart that shows the amount of principl
 We compute several functions to determine the weights of each principle component. We then visualize a scatterplot that visualizes an organized descending plot with the respective weight of every company at the current chosen principle component. 
 
 ### Sharpe Ratio
+The sharpe ratio explains the annualized returns against the annualized volatility of each company in a portfolio. 
+
+1) Annualized Returns: We have to apply the geometric average of all the returns in respect to the periods per year (days of operations in the exchange in a year). 
+2) Annualized Volatility: We have to take the standard deviation of the returns and multiply it by the square root of the periods per year. 
+3) Annualized Sharpe: we compute the ratio by dividing the annualized returns against the annualized volatility. 
+
+
+
+
+
