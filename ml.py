@@ -50,27 +50,6 @@ data.dropna(how='any', inplace=True)
 # plt.legend()
 # plt.show()
 
-# Labeling the data as benign, 2001-2002 crisis, or 2007-2009 crisis.
-def boolLabeling(data=data):
-    '''
-    
-    Adds boolean values for the time span of the two financial crisis.
-
-    '''
-
-    crisis2001 = dt.datetime(2001,1,1)
-    crisis2002 = dt.datetime(2002,12,31)
-
-    crisis2007 = dt.datetime(2007,1,1)
-    crisis2009 = dt.datetime(2009,12,31)
-
-    crisis1 = (data.index >= crisis2001) & (data.index <= crisis2002).tolist() 
-    crisis2 = (data.index >= crisis2007) & (data.index <= crisis2009).tolist()
-
-    data['CRISIS'] = np.logical_or(crisis1,crisis2)
-
-# boolLabeling()
-
 # Taking away the market benchmark DJIA
 stock_tickers = data.drop(['DJIA'], axis=1)
 stock_tickers_raw = data_raw.drop(['DJIA'], axis=1)
