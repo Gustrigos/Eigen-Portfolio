@@ -184,8 +184,6 @@ def optimizedPortfolio():
         annualized_vol[ix] = vol
         sharpe_metric[ix] = sharpe
 
-
-
     # find portfolio with the highest Sharpe ratio
     idx_highest_sharpe = np.argmax(sharpe_metric)
 
