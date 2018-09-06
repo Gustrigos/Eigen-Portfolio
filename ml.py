@@ -138,8 +138,8 @@ def sharpe_ratio(ts_returns, periods_per_year=252):
     
     ts_returns are  returns of a signle eigen portfolio.
     '''
-
-    annualized_return = ts_returns.mean() * periods_per_year 
+    n_years = ts_returns.shape[0]/periods_per_year
+    annualized_return = np.power(np.prod(1+ts_returns),(1/n_years))-1
     annualized_vol = ts_returns.std() * np.sqrt(periods_per_year)
     annualized_sharpe = annualized_return / annualized_vol
 
@@ -151,7 +151,7 @@ def plotSharpe(eigen):
     Plots Principle components returns against real returns.
     '''
 
-    eigen_portfolio_returns = np.dot(X_test_raw.loc[:, eigen.index], eigen / 100)
+    eigen_portfolio_returns = np.dot(X_test_raw.loc[:, eigen.index], eigen / len(pcs))
     eigen_portfolio_returns = pd.Series(eigen_portfolio_returns.squeeze(), index=X_test.index)
     returns, vol, sharpe = sharpe_ratio(eigen_portfolio_returns)
     print('Current Eigen-Portfolio:\nReturn = %.2f%%\nVolatility = %.2f%%\nSharpe = %.2f' % (returns*100, vol*100, sharpe))
@@ -162,7 +162,7 @@ def plotSharpe(eigen):
                              figsize=(12,6), linewidth=3)
     plt.show()
 
-plotSharpe(eigen=plotEigen(weights=weights[3]))
+plotSharpe(eigen=plotEigen(weights=weights[4]))
 
 def optimizedPortfolio():
     n_portfolios = len(pcs)
@@ -192,6 +192,7 @@ def optimizedPortfolio():
            annualized_ret[idx_highest_sharpe]*100, 
            annualized_vol[idx_highest_sharpe]*100, 
            sharpe_metric[idx_highest_sharpe]))
+
 
     fig, ax = plt.subplots()
     fig.set_size_inches(12, 4)
