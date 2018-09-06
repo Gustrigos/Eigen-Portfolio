@@ -101,12 +101,12 @@ def plotPCA(plot=False):
 plotPCA(plot=False)
 
 projected = pca.fit_transform(cov_matrix)
+pcs = pca.components_
 
 def PCWeights():
     '''
     Principal Components (PC) weights for each 28 PCs
     '''
-    pcs = pca.components_
     weights = pd.DataFrame()
 
     for i in range(len(pcs)):
@@ -137,10 +137,6 @@ def plotEigenPortfolios(weights, plot=False, portfolio=portfolio):
 # Weights are stored in arrays, where 0 is the first PC's weights.
 plotEigenPortfolios(weights=weights[0], plot=False)
 
-def portfolios():
-# we need to save all the portfolios with a for loop into a bigger data frame so we can choose all the weights as columns.
-
-
 # Sharpe Ratio
 
 def sharpe_ratio(ts_returns, periods_per_year=252):
@@ -157,12 +153,13 @@ def sharpe_ratio(ts_returns, periods_per_year=252):
 
     return annualized_return, annualized_vol, annualized_sharpe
 
-def plotSharpe(eigen_portfolio):
+def plotSharpe(eigen):
+
     '''
     Plots Principle components returns against real returns.
     '''
 
-    eigen_portfolio_returns = np.dot(X_test_raw.loc[:, eigen_portfolio.index], eigen_portfolio / 100)
+    eigen_portfolio_returns = np.dot(X_test_raw.loc[:, eigen.index], eigen / 100)
     eigen_portfolio_returns = pd.Series(eigen_portfolio_returns.squeeze(), index=X_test.index)
     returns, vol, sharpe = sharpe_ratio(eigen_portfolio_returns)
     print('Current Eigen-Portfolio:\nReturn = %.2f%%\nVolatility = %.2f%%\nSharpe = %.2f' % (returns*100, vol*100, sharpe))
@@ -172,7 +169,8 @@ def plotSharpe(eigen_portfolio):
     np.cumprod(df_plot + 1).plot(title='Returns of the market-cap weighted index vs. First eigen-portfolio', 
                              figsize=(12,6), linewidth=3)
 
+# plotSharpe(eigen=plotEigenPortfolios(weights=weights[0], plot=False))
 
-# plotSharpe(eigen_portfolio=plotEigenPortfolios(weights=weights[0]))
+
 
 
