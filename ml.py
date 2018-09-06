@@ -28,19 +28,14 @@ datareturns = np.log(data / data.shift(1)) * 100
 
 # Data Raw
 data_raw = datareturns
+data_raw.dropna(how='all', inplace=True)
 
 # Normalizing the Log returns
-data = (datareturns - datareturns.mean()) / datareturns.std()
-
-# Getting rid of the first row with NaN values.
-data.dropna(how='all', inplace=True)
-
-# take care of inf/NaN values by assigning them high values:
-# *the algorithm won't take these outliers into consideration*
-# data.fillna(999999, inplace=True)
+data = (data_raw - data_raw.mean()) / data_raw.std()
 
 # Getting rid of the NaN values.
 data.dropna(how='any', inplace=True)
+data_raw.dropna(how='any', inplace=True)
 
 # Visualizing Log Returns for the DJIA 
 # plt.figure(figsize=(16, 5))
@@ -51,30 +46,28 @@ data.dropna(how='any', inplace=True)
 # plt.show()
 
 # Taking away the market benchmark DJIA
-stock_tickers = data.drop(['DJIA'], axis=1)
-stock_tickers_raw = data_raw.drop(['DJIA'], axis=1)
-tickers = stock_tickers.columns.values
-n_tickers = len(tickers)
-
+stock_tickers = data.columns.values[:-1]
+n_tickers = len(stock_tickers)
+print(stock_tickers)
 # Dividing the dataset into training and testing sets
 percentage = int(len(data) * 0.8)
-X_train = stock_tickers[:percentage]
-X_test = stock_tickers[percentage:]
+X_train = data[:percentage]
+X_test = data[percentage:]
 
-X_train_raw = stock_tickers_raw[:percentage]
-X_test_raw = stock_tickers_raw[percentage:]
+X_train_raw = data_raw[:percentage]
+X_test_raw = data_raw[percentage:]
 
 # Applying Principle Component Analysis
 
 # Creating covariance matrix and training data on PCA.
-cov_matrix = X_train.loc[:,X_train.columns].cov()
+cov_matrix = X_train.loc[:,X_train.columns != 'DJIA'].cov()
 pca = PCA()
 pca.fit(cov_matrix)
 
 def plotPCA(plot=False):
 
     # Visualizing Variance against number of principal components.
-    cov_matrix_raw = X_train_raw.loc[:,X_train_raw.columns].cov()
+    cov_matrix_raw = X_train_raw.loc[:,X_train_raw.columns != 'DJIA'].cov()
 
     var_threshold = 0.95
     var_explained = np.cumsum(pca.explained_variance_ratio_)
@@ -118,15 +111,15 @@ def PCWeights():
 weights = PCWeights()
 portfolio = portfolio = pd.DataFrame()
 
-def plotEigenPortfolios(weights, plot=False, portfolio=portfolio):
-    portfolio = pd.DataFrame(data ={'weights': weights.squeeze()*100}, index = stock_tickers.columns) 
+def plotEigen(weights, plot=False, portfolio=portfolio):
+    portfolio = pd.DataFrame(data ={'weights': weights.squeeze()*100}, index = stock_tickers) 
     portfolio.sort_values(by=['weights'], ascending=False, inplace=True)
     
     if plot:
         print('Sum of weights of current eigen-portfolio: %.2f' % np.sum(portfolio))
         portfolio.plot(title='Current Eigen-Portfolio Weights', 
             figsize=(12,6), 
-            xticks=range(0, len(stock_tickers.columns),1), 
+            xticks=range(0, len(stock_tickers),1), 
             rot=45, 
             linewidth=3
             )
@@ -135,10 +128,9 @@ def plotEigenPortfolios(weights, plot=False, portfolio=portfolio):
     return portfolio
 
 # Weights are stored in arrays, where 0 is the first PC's weights.
-plotEigenPortfolios(weights=weights[0], plot=False)
+plotEigen(weights=weights[0], plot=False)
 
 # Sharpe Ratio
-
 def sharpe_ratio(ts_returns, periods_per_year=252):
     '''
     Sharpe ratio is the average return earned in excess of the risk-free rate per unit of volatility or total risk.
@@ -165,12 +157,10 @@ def plotSharpe(eigen):
     print('Current Eigen-Portfolio:\nReturn = %.2f%%\nVolatility = %.2f%%\nSharpe = %.2f' % (returns*100, vol*100, sharpe))
     year_frac = (eigen_portfolio_returns.index[-1] - eigen_portfolio_returns.index[0]).days / 252
 
-    df_plot = pd.DataFrame({'PC1': eigen_portfolio_returns, 'SPX': X_test_raw.loc[:, 'SPX']}, index=X_test.index)
+    df_plot = pd.DataFrame({'PC': eigen_portfolio_returns, 'DJIA': X_test_raw.loc[:, 'DJIA']}, index=X_test.index)
     np.cumprod(df_plot + 1).plot(title='Returns of the market-cap weighted index vs. First eigen-portfolio', 
                              figsize=(12,6), linewidth=3)
+    plt.show()
 
-# plotSharpe(eigen=plotEigenPortfolios(weights=weights[0], plot=False))
-
-
-
+plotSharpe(eigen=plotEigen(weights=weights[3]))
 
