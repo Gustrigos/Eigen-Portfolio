@@ -35,8 +35,8 @@ data = (datareturns - datareturns.mean()) / datareturns.std()
 # Getting rid of the first row with NaN values.
 data.dropna(how='all', inplace=True)
 
-# take care of inf/NaN values by assigning them high values:
-# *the algorithm won't take these outliers into consideration*
+# take care of inf/NaN values by assigning them high values:
+# *the algorithm won't take these outliers into consideration*
 # data.fillna(999999, inplace=True)
 
 # Getting rid of the NaN values.
@@ -71,40 +71,40 @@ cov_matrix = X_train.loc[:,X_train.columns].cov()
 pca = PCA()
 pca.fit(cov_matrix)
 
-def plotPCA(X_train=X_train):
+def plotPCA(plot=False):
 
-    # Visualizing Variance against number of principal components.
+    # Visualizing Variance against number of principal components.
     cov_matrix_raw = X_train_raw.loc[:,X_train_raw.columns].cov()
 
     var_threshold = 0.95
     var_explained = np.cumsum(pca.explained_variance_ratio_)
     num_comp = np.where(np.logical_not(var_explained < var_threshold))[0][0] + 1  
-    print('%d principal components explain %.2f%% of variance' %(num_comp, 100* var_threshold))
 
-    # PCA percent variance explained.
-    bar_width = 0.9
-    n_asset = stock_tickers.shape[1]
-    x_indx = np.arange(n_asset)
-    fig, ax = plt.subplots()
+    if plot:
+        print('%d principal components explain %.2f%% of variance' %(num_comp, 100* var_threshold))
 
-    # Eigenvalues measured as percentage of explained variance.
-    rects = ax.bar(x_indx, pca.explained_variance_ratio_[:n_asset], bar_width)
-    ax.set_xticks(x_indx + bar_width / 2)
-    ax.set_xticklabels(list(range(n_asset)), rotation=45)
-    ax.set_title('Percent variance explained')
-    ax.set_ylabel('Explained Variance')
-    ax.set_xlabel('Principal Components')
-    plt.show()
+        # PCA percent variance explained.
+        bar_width = 0.9
+        n_asset = stock_tickers.shape[1]
+        x_indx = np.arange(n_asset)
+        fig, ax = plt.subplots()
 
-# plotPCA()
+        # Eigenvalues measured as percentage of explained variance.
+        rects = ax.bar(x_indx, pca.explained_variance_ratio_[:n_asset], bar_width)
+        ax.set_xticks(x_indx + bar_width / 2)
+        ax.set_xticklabels(list(range(n_asset)), rotation=45)
+        ax.set_title('Percent variance explained')
+        ax.set_ylabel('Explained Variance')
+        ax.set_xlabel('Principal Components')
+        plt.show()
+
+plotPCA(plot=False)
 
 projected = pca.fit_transform(cov_matrix)
 
 def PCWeights():
     '''
-
     Principal Components (PC) weights for each 28 PCs
-
     '''
     pcs = pca.components_
     weights = pd.DataFrame()
@@ -116,30 +116,35 @@ def PCWeights():
     return weights
 
 weights = PCWeights()
+portfolio = portfolio = pd.DataFrame()
 
-def plotEigenPortfolios(weights):
+def plotEigenPortfolios(weights, plot=False, portfolio=portfolio):
     portfolio = pd.DataFrame(data ={'weights': weights.squeeze()*100}, index = stock_tickers.columns) 
     portfolio.sort_values(by=['weights'], ascending=False, inplace=True)
-    print('Sum of weights of current eigen-portfolio: %.2f' % np.sum(portfolio))
-    portfolio.plot(title='Current Eigen-Portfolio Weights', 
-        figsize=(12,6), 
-        xticks=range(0, len(stock_tickers.columns),1), 
-        rot=45, 
-        linewidth=3
-        )
-    plt.show()
+    
+    if plot:
+        print('Sum of weights of current eigen-portfolio: %.2f' % np.sum(portfolio))
+        portfolio.plot(title='Current Eigen-Portfolio Weights', 
+            figsize=(12,6), 
+            xticks=range(0, len(stock_tickers.columns),1), 
+            rot=45, 
+            linewidth=3
+            )
+        plt.show()
+
+    return portfolio
 
 # Weights are stored in arrays, where 0 is the first PC's weights.
-plotEigenPortfolios(weights=weights[2])
+plotEigenPortfolios(weights=weights[0], plot=False)
 
-# Storing each portfolio
-portfolio = pd.DataFrame(data ={'weights': weights.squeeze()*100}, index = stock_tickers.columns)
+def portfolios():
+# we need to save all the portfolios with a for loop into a bigger data frame so we can choose all the weights as columns.
+
 
 # Sharpe Ratio
 
 def sharpe_ratio(ts_returns, periods_per_year=252):
     '''
-
     Sharpe ratio is the average return earned in excess of the risk-free rate per unit of volatility or total risk.
     It calculares the annualized return, annualized volatility, and annualized sharpe ratio.
     
@@ -152,20 +157,22 @@ def sharpe_ratio(ts_returns, periods_per_year=252):
 
     return annualized_return, annualized_vol, annualized_sharpe
 
-def plotReturns():
+def plotSharpe(eigen_portfolio):
     '''
-
     Plots Principle components returns against real returns.
-
     '''
 
-    eigen_portfolio_returns = np.dot(X_test_raw.loc[:, eigen_prtf1.index], eigen_prtf1 / 100)
-    eigen_portfolio_returns = pd.Series(eigen_prtf1_returns.squeeze(), index=X_test.index)
-    returns, vol, sharpe = sharpe_ratio(eigen_prtf1_returns)
-    print('First eigen-portfolio:\nReturn = %.2f%%\nVolatility = %.2f%%\nSharpe = %.2f' % (returns*100, vol*100, sharpe))
-    year_frac = (eigen_prtf1_returns.index[-1] - eigen_prtf1_returns.index[0]).days / 252
+    eigen_portfolio_returns = np.dot(X_test_raw.loc[:, eigen_portfolio.index], eigen_portfolio / 100)
+    eigen_portfolio_returns = pd.Series(eigen_portfolio_returns.squeeze(), index=X_test.index)
+    returns, vol, sharpe = sharpe_ratio(eigen_portfolio_returns)
+    print('Current Eigen-Portfolio:\nReturn = %.2f%%\nVolatility = %.2f%%\nSharpe = %.2f' % (returns*100, vol*100, sharpe))
+    year_frac = (eigen_portfolio_returns.index[-1] - eigen_portfolio_returns.index[0]).days / 252
 
-    df_plot = pd.DataFrame({'PC1': eigen_prtf1_returns, 'SPX': X_test_raw.loc[:, 'SPX']}, index=X_test.index)
+    df_plot = pd.DataFrame({'PC1': eigen_portfolio_returns, 'SPX': X_test_raw.loc[:, 'SPX']}, index=X_test.index)
     np.cumprod(df_plot + 1).plot(title='Returns of the market-cap weighted index vs. First eigen-portfolio', 
                              figsize=(12,6), linewidth=3)
+
+
+# plotSharpe(eigen_portfolio=plotEigenPortfolios(weights=weights[0]))
+
 
