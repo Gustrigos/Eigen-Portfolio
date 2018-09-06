@@ -26,7 +26,20 @@ ri,t = ln * (pi,t)/pi,t−1.
 The price for an asset i at a given time t is pi,t and the linear returns for each stock i will be written as:
 ri,t=(pi,t−pi,t−1)/pi,t−1.
 
-### Normalizing Returns
+### Normalized Returns
 In order to create a covariance matrix that can be applied for the Principle Component Analysis, we will have to normalize the returns we choose to work with.
 To normalize we substract the mean of each return and divide the residual by the return's standard deviation.
 
+### Data Preprocessing
+1) We preprocess the data by getting rid of all the Not a Number rows in the returns dataframe.
+2) We split the training and testing sets with a predetermined percentage (in this case 80%, but can be modified at will).
+3) We then create the covariance matrix of all the companies exclusing the column of the DJIA Index by computing the pandas .cov() function. With this we will have a 28 x 28 matrix.
+
+### Principle Component Analysis
+We create a function to compute Principle Component Analysis from Sklearn with a variance explained treshold of 95%.
+This function computes an inversed elbow chart that shows the amount of principle components and how many of them explain the variance treshold. 
+
+### Eigen Portfolios
+We compute several functions to determine the weights of each principle component. We then visualize a scatterplot that visualizes an organized descending plot with the respective weight of every company at the current chosen principle component. 
+
+### Sharpe Ratio
