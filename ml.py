@@ -15,7 +15,7 @@ style.use("ggplot")
 df = pd.read_csv('DJIA_adjcloses.csv', parse_dates=True, index_col=0)
 
 # Visualizing the dataframe
-# print(data.head())
+# print(df.head())
 
 # Dropping 'Not a Number' columns for Dow Chemicals (DWDP) and Visa (V)
 df.drop(['DWDP', 'V'], axis=1, inplace=True)
@@ -23,10 +23,11 @@ df.drop(['DWDP', 'V'], axis=1, inplace=True)
 # Copying the dataframe to add features
 data = pd.DataFrame(df.copy())
 
+# Daily Returns
 # Daily Log Returns (%)
 # datareturns = np.log(data / data.shift(1)) 
 
-# Daily Returns (%)
+# Daily Linear Returns (%)
 datareturns = data.pct_change(1)
 
 # Data Raw
@@ -42,7 +43,7 @@ data_raw.dropna(how='any', inplace=True)
 
 # Visualizing Log Returns for the DJIA 
 # plt.figure(figsize=(16, 5))
-# plt.title("Dow Jones Industrial Average Log Returns (%)")
+# plt.title("Dow Jones Industrial Average Linear Returns (%)")
 # data.DJIA.plot()
 # plt.grid(True);
 # plt.legend()
@@ -81,7 +82,7 @@ def plotPCA(plot=False):
 
         # PCA percent variance explained.
         bar_width = 0.9
-        n_asset = stock_tickers.shape[1]
+        n_asset = stock_tickers.shape[0]
         x_indx = np.arange(n_asset)
         fig, ax = plt.subplots()
 
@@ -94,7 +95,7 @@ def plotPCA(plot=False):
         ax.set_xlabel('Principal Components')
         plt.show()
 
-plotPCA(plot=False)
+plotPCA(plot=True)
 
 projected = pca.fit_transform(cov_matrix)
 pcs = pca.components_
@@ -131,7 +132,7 @@ def plotEigen(weights, plot=False, portfolio=portfolio):
     return portfolio
 
 # Weights are stored in arrays, where 0 is the first PC's weights.
-plotEigen(weights=weights[4], plot=False)
+plotEigen(weights=weights[4], plot=True)
 
 # Sharpe Ratio
 def sharpe_ratio(ts_returns, periods_per_year=252):
@@ -151,7 +152,9 @@ def sharpe_ratio(ts_returns, periods_per_year=252):
 def plotSharpe(eigen):
 
     '''
+
     Plots Principle components returns against real returns.
+    
     '''
 
     eigen_portfolio_returns = np.dot(X_test_raw.loc[:, eigen.index], eigen / len(pcs))
@@ -212,4 +215,5 @@ def optimizedPortfolio():
     plt.show()
 
 optimizedPortfolio()
+
 
