@@ -164,3 +164,49 @@ def plotSharpe(eigen):
 
 plotSharpe(eigen=plotEigen(weights=weights[3]))
 
+def optimizedPortfolio():
+    n_portfolios = len(pcs)
+    annualized_ret = np.array([0.] * n_portfolios)
+    sharpe_metric = np.array([0.] * n_portfolios)
+    annualized_vol = np.array([0.] * n_portfolios)
+    idx_highest_sharpe = 0 
+
+    for ix in range(n_portfolios):
+        
+        pc_w = pcs[:, ix] / sum(pcs[:, ix])
+        eigen_prtfix = pd.DataFrame(data ={'weights': pc_w.squeeze()*100}, index = stock_tickers)
+        eigen_prtfix.sort_values(by=['weights'], ascending=False, inplace=True)
+        
+        eigen_prtix_returns = np.dot(X_test_raw.loc[:, eigen_prtfix.index], eigen_prtfix / n_portfolios)
+        eigen_prtix_returns = pd.Series(eigen_prtix_returns.squeeze(), index=X_test.index)
+        er, vol, sharpe = sharpe_ratio(eigen_prtix_returns)
+        annualized_ret[ix] = er
+        annualized_vol[ix] = vol
+        sharpe_metric[ix] = sharpe
+
+
+
+    # find portfolio with the highest Sharpe ratio
+    idx_highest_sharpe = np.argmax(sharpe_metric)
+
+    print('Eigen portfolio #%d with the highest Sharpe. Return %.2f%%, vol = %.2f%%, Sharpe = %.2f' % 
+          (idx_highest_sharpe,
+           annualized_ret[idx_highest_sharpe]*100, 
+           annualized_vol[idx_highest_sharpe]*100, 
+           sharpe_metric[idx_highest_sharpe]))
+
+    fig, ax = plt.subplots()
+    fig.set_size_inches(12, 4)
+    ax.plot(sharpe_metric, linewidth=3)
+    ax.set_title('Sharpe ratio of eigen-portfolios')
+    ax.set_ylabel('Sharpe ratio')
+    ax.set_xlabel('Portfolios')
+
+    results = pd.DataFrame(data={'Return': annualized_ret, 'Vol': annualized_vol, 'Sharpe': sharpe_metric})
+    results.dropna(inplace=True)
+    results.sort_values(by=['Sharpe'], ascending=False, inplace=True)
+    print(results.head(10))
+
+    plt.show()
+
+optimizedPortfolio()
