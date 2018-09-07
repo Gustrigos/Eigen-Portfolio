@@ -53,5 +53,5 @@ A high sharpe ratio explains higher returns and lower volatility for the specifi
 ### Optimized Portfolio
 We compute an iterable loop to compute the principle component's weights for each Eigen Portfolio, which then uses the sharpe ratio function to look for the portfolio with the highest sharpe ratio. Once we know which portfolio has the highest sharpe ratio, we can visualize its performance against the DJIA Index to understand how it outperforms it. 
 
-
-
+## Acknowledgements
+This project was inspired by the lectures on Portfolio Optimization on the course of Machine Learning in Finance by NYU Tandon School of Engineering. The theoretical basis and through implementation was modeled after Avellaneda & Lee (2008) "Statistical Arbitrage in the U.S. Equities Market."
