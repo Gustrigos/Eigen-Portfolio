@@ -175,7 +175,7 @@ def optimizedPortfolio():
     annualized_ret = np.array([0.] * n_portfolios)
     sharpe_metric = np.array([0.] * n_portfolios)
     annualized_vol = np.array([0.] * n_portfolios)
-    idx_highest_sharpe = 0 
+    highest_sharpe = 0 
 
     for i in range(n_portfolios):
         
@@ -191,13 +191,13 @@ def optimizedPortfolio():
         sharpe_metric[i] = sharpe
 
     # find portfolio with the highest Sharpe ratio
-    idx_highest_sharpe = np.argmax(sharpe_metric)
+    highest_sharpe = np.argmax(sharpe_metric)
 
     print('Eigen portfolio #%d with the highest Sharpe. Return %.2f%%, vol = %.2f%%, Sharpe = %.2f' % 
-          (idx_highest_sharpe,
-           annualized_ret[idx_highest_sharpe]*100, 
-           annualized_vol[idx_highest_sharpe]*100, 
-           sharpe_metric[idx_highest_sharpe]))
+          (highest_sharpe,
+           annualized_ret[highest_sharpe]*100, 
+           annualized_vol[highest_sharpe]*100, 
+           sharpe_metric[highest_sharpe]))
 
 
     fig, ax = plt.subplots()
