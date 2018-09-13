@@ -177,18 +177,18 @@ def optimizedPortfolio():
     annualized_vol = np.array([0.] * n_portfolios)
     idx_highest_sharpe = 0 
 
-    for ix in range(n_portfolios):
+    for i in range(n_portfolios):
         
-        pc_w = pcs[:, ix] / sum(pcs[:, ix])
-        eigen_prtfix = pd.DataFrame(data ={'weights': pc_w.squeeze()*100}, index = stock_tickers)
-        eigen_prtfix.sort_values(by=['weights'], ascending=False, inplace=True)
+        pc_w = pcs[:, i] / sum(pcs[:, i])
+        eigen_prtfi = pd.DataFrame(data ={'weights': pc_w.squeeze()*100}, index = stock_tickers)
+        eigen_prtfi.sort_values(by=['weights'], ascending=False, inplace=True)
         
-        eigen_prtix_returns = np.dot(X_test_raw.loc[:, eigen_prtfix.index], eigen_prtfix / n_portfolios)
-        eigen_prtix_returns = pd.Series(eigen_prtix_returns.squeeze(), index=X_test.index)
-        er, vol, sharpe = sharpe_ratio(eigen_prtix_returns)
-        annualized_ret[ix] = er
-        annualized_vol[ix] = vol
-        sharpe_metric[ix] = sharpe
+        eigen_prti_returns = np.dot(X_test_raw.loc[:, eigen_prtfix.index], eigen_prtfix / n_portfolios)
+        eigen_prti_returns = pd.Series(eigen_prtix_returns.squeeze(), index=X_test.index)
+        er, vol, sharpe = sharpe_ratio(eigen_prti_returns)
+        annualized_ret[i] = er
+        annualized_vol[i] = vol
+        sharpe_metric[i] = sharpe
 
     # find portfolio with the highest Sharpe ratio
     idx_highest_sharpe = np.argmax(sharpe_metric)
