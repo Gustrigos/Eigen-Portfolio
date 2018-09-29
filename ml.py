@@ -191,7 +191,7 @@ def optimizedPortfolio():
         sharpe_metric[i] = sharpe
 
     # find portfolio with the highest Sharpe ratio
-    highest_sharpe = np.argmax(sharpe_metric)
+    highest_sharpe = np.nanargmax(sharpe_metric)
 
     print('Eigen portfolio #%d with the highest Sharpe. Return %.2f%%, vol = %.2f%%, Sharpe = %.2f' % 
           (highest_sharpe,
