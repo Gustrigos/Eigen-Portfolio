@@ -35,7 +35,7 @@ To normalize we substract the mean of each return and divide the residual by the
 2) We split the training and testing sets with a predetermined percentage (in this case 80%, but can be modified at will).
 3) We then create the covariance matrix of all the companies exclusing the column of the DJIA Index by computing the pandas .cov() function. With this we will have a 28 x 28 matrix.
 
-### Principle Component Analysis
+### Principal Component Analysis
 We create a function to compute Principle Component Analysis from Sklearn with a variance explained treshold of 95%.
 This function computes an inversed elbow chart that shows the amount of principle components and how many of them explain the variance treshold. 
 
