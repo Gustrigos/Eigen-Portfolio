@@ -1,5 +1,5 @@
 # Eigen-Portfolios
-Automatized unsupervised machine learning Principal Component Analysis (PCA) on the Dow Jones Industrial Average index and it's respective 30 stocks to construct an optimized diversified intelligent portfolio. 
+Automated unsupervised machine learning Principal Component Analysis (PCA) on the Dow Jones Industrial Average index and it's respective 30 stocks to construct an optimized diversified intelligent portfolio. 
 
 ### Files
 1) tiingoconnect.py: creates a function to extract historical financial data from the financial API Tiingo. 
