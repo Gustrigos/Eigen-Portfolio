@@ -18,7 +18,7 @@ df = pd.read_csv('DJIA_adjcloses.csv', parse_dates=True, index_col=0)
 # print(df.head())
 
 # Dropping 'Not a Number' columns for Dow Chemicals (DWDP) and Visa (V)
-df.drop(['DWDP', 'V'], axis=1, inplace=True)
+df.drop(['DWDP', 'V'], axis=1)
 
 # Copying the dataframe to add features
 data = pd.DataFrame(df.copy())
@@ -32,14 +32,14 @@ datareturns = data.pct_change(1)
 
 # Data Raw
 data_raw = datareturns
-data_raw.dropna(how='all', inplace=True)
+data_raw.dropna(how='all')
 
 # Normalizing the Log returns
 data = (data_raw - data_raw.mean()) / data_raw.std()
 
 # Getting rid of the NaN values.
-data.dropna(how='any', inplace=True)
-data_raw.dropna(how='any', inplace=True)
+data.dropna(how='any')
+data_raw.dropna(how='any')
 
 # Visualizing Log Returns for the DJIA 
 # plt.figure(figsize=(16, 5))
